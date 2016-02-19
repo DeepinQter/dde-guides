@@ -138,4 +138,36 @@ dde-desktop是基于**Qt-QWidget**和**Go** 开发的，分为前端和后端，
     + QWidget 
     + inotify
 + dde-desktop后端进程为`deepin-file-manager-backend`
+
+
+#####3. 技术难点
+
+`inotify的使用方式`
+
++ 第一种使用方式：采用非阻塞while true的方式去监听文件句柄的变化
+
+        while (true) {
+                numRead = read(m_fd, buffer, MAX_BUF_SIZE);
+                if (numRead == 0 || numRead == -1) {
+                  fprintf(stderr, "Failed to read from inotify file descriptor\n");
+                  exit(EXIT_FAILURE);
+                }
+        
+                for (offset = buffer; offset < buffer + numRead; ) {
+                  event = (struct inotify_event*) offset;
+                  handleInotifyEvent(event);
+                  offset += sizeof(struct inotify_event) + event->len;
+                }
+           }
+    
++ 第二种使用方式：采用QSocketNotifier异步方式去监听
+
+            m_notifier = new QSocketNotifier(m_inotifyFd, QSocketNotifier::Read, this);
+            fcntl(m_inotifyFd, F_SETFD, FD_CLOEXEC);
+            connect(m_notifier, SIGNAL(activated(int)), this, SLOT(readFromInotify()));
+    
+当快速频繁的创建和删除文件时：
++ 第一种方式会导致cpu占用过高，桌面进程crash;
++ 第二种解决方案不会出现cpu过高，桌面进程crash的问题，但是会出现一定的延时；
+
 ![dde-desktop](./images/dde-desktop.png)
