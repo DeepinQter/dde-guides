@@ -139,6 +139,7 @@ dde-desktop是基于**Qt-QWidget**和**Go** 开发的，分为前端和后端，
     + inotify
 + dde-desktop后端进程为`deepin-file-manager-backend`
 
+![dde-desktop](./images/dde-desktop.png)
 
 #####3. 技术难点
 
@@ -170,4 +171,4 @@ dde-desktop是基于**Qt-QWidget**和**Go** 开发的，分为前端和后端，
 + 第一种方式会导致cpu占用过高，桌面进程crash;
 + 第二种解决方案不会出现cpu过高，桌面进程crash的问题，但是会出现一定的延时；
 
-![dde-desktop](./images/dde-desktop.png)
+
